@@ -18,7 +18,10 @@ const Repos = () => {
             const response = await fetch(`https://api.github.com/users/${username}/repos`);
             const data = await response.json();
 
-            setRepos(data);
+          let ordererRepos = data.sort((a:RepoProps, b:RepoProps) => b.stargazers_count - a.stargazers_count);
+
+          ordererRepos = ordererRepos.slice(0, 5);
+            setRepos(ordererRepos);
             setIsLoading(false);
         };
         if(username) {
@@ -32,12 +35,12 @@ const Repos = () => {
     }
 
   return (
-    <div>
+    <div className={styles.repos}>
         <BackBtn />
         <h2>Explore os repositório de: {username}</h2>
         {repos && repos.length === 0 && <p>Nenhum repositório encontrado</p>}
         {repos && repos.length > 0 && (
-          <div>
+          <div className={styles.repos_container}> 
             {repos.map((repo:RepoProps) => (
               <Repo key={repo.name} {...repo} />
             ))}
