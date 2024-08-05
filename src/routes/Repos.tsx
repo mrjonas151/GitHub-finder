@@ -4,6 +4,7 @@ import styles from "./Repos.module.css"
 import BackBtn from "../components/BackBtn"
 import { RepoProps } from "../types/repo"
 import Loader from "../components/Loader"
+import Repo from "../components/Repo"
 
 const Repos = () => {
     const { username } = useParams();
@@ -12,7 +13,7 @@ const Repos = () => {
 
     useEffect(() => {
         
-        const loadRepos = async function (username: string = "") {
+        const loadRepos = async function (username: string) {
             setIsLoading(true);
             const response = await fetch(`https://api.github.com/users/${username}/repos`);
             const data = await response.json();
@@ -20,14 +21,28 @@ const Repos = () => {
             setRepos(data);
             setIsLoading(false);
         };
-        loadRepos(username);
+        if(username) {
+          loadRepos(username);
+        }
+        
     }, []);
 
+    if(!repos && isloading) {
+        return <Loader />
+    }
 
   return (
     <div>
         <BackBtn />
-        Repos {username}
+        <h2>Explore os repositório de: {username}</h2>
+        {repos && repos.length === 0 && <p>Nenhum repositório encontrado</p>}
+        {repos && repos.length > 0 && (
+          <div>
+            {repos.map((repo:RepoProps) => (
+              <Repo key={repo.name} {...repo} />
+            ))}
+          </div>
+        )}
     </div>
   )
 }
